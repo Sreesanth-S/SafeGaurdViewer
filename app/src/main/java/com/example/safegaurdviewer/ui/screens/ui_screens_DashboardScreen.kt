@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.safegaurdviewer.navigations.Screen
+import com.example.safegaurdviewer.ui.navigations.Screen
 import com.safeguard.viewer.ui.components.*
 
 @Composable

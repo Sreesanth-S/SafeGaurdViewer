@@ -1,4 +1,4 @@
-package com.example.safegaurdviewer.ui.theme
+package com.example.safegaurdviewer.theme
 
 import androidx.compose.ui.graphics.Color
 

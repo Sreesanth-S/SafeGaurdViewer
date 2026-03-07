@@ -1,4 +1,4 @@
-package com.example.safegaurdviewer.navigations
+package com.example.safegaurdviewer.ui.navigations
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard

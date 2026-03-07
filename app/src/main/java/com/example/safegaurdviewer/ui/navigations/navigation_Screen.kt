@@ -1,4 +1,4 @@
-package com.example.safegaurdviewer.navigations
+package com.example.safegaurdviewer.ui.navigations
 
 sealed class Screen(val route: String) {
     object Dashboard : Screen("dashboard")

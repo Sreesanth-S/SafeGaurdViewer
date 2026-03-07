@@ -14,13 +14,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.safeguard.viewer.ui.components.RiskScoreMeter
-import com.safeguard.viewer.ui.theme.SuspiciousYellow
+import com.example.safegaurdviewer.ui.components.RiskScoreMeter
+import com.example.safegaurdviewer.ui.theme.SuspiciousYellow
 
 @Composable
 fun ScanCenterScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
-    
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -37,33 +37,20 @@ fun ScanCenterScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(20.dp))
         }
-        
+
         item {
-            // Tab Selection
             TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.primary
             ) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text("File") }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text("Link") }
-                )
-                Tab(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    text = { Text("APK") }
-                )
+                Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("File") })
+                Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("Link") })
+                Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }, text = { Text("APK") })
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
-        
+
         when (selectedTab) {
             0 -> item { FileScannerCard() }
             1 -> item { LinkScannerCard() }
@@ -77,78 +64,48 @@ fun FileScannerCard() {
     var isScanning by remember { mutableStateOf(false) }
     var scanScore by remember { mutableStateOf(0) }
     var hasScanned by remember { mutableStateOf(false) }
-    
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(16.dp)
-            )
+            .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
             .padding(20.dp)
     ) {
-        Text(
-            text = "File Scanner",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Text(text = "File Scanner", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Button(
-            onClick = { 
+            onClick = {
                 isScanning = true
                 scanScore = (0..100).random()
                 hasScanned = true
                 isScanning = false
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Icon(Icons.Default.Folder, contentDescription = "Select")
             Spacer(modifier = Modifier.width(8.dp))
             Text("Select File")
         }
-        
+
         if (hasScanned) {
             Spacer(modifier = Modifier.height(16.dp))
-            
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(12.dp))
                     .padding(12.dp)
             ) {
                 Column {
-                    Text(
-                        text = "document.pdf",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "2.4 MB • SHA-256: a3f2e1...",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
+                    Text(text = "document.pdf", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
+                    Text(text = "2.4 MB • SHA-256: a3f2e1...", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
                 }
             }
-            
             Spacer(modifier = Modifier.height(16.dp))
-            
             if (isScanning) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 RiskScoreMeter(score = scanScore)
@@ -163,24 +120,16 @@ fun LinkScannerCard() {
     var isScanning by remember { mutableStateOf(false) }
     var scanScore by remember { mutableStateOf(0) }
     var hasScanned by remember { mutableStateOf(false) }
-    
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(16.dp)
-            )
+            .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
             .padding(20.dp)
     ) {
-        Text(
-            text = "Link Scanner",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Text(text = "Link Scanner", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         OutlinedTextField(
             value = linkInput,
             onValueChange = { linkInput = it },
@@ -193,61 +142,38 @@ fun LinkScannerCard() {
                 unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             )
         )
-        
         Spacer(modifier = Modifier.height(12.dp))
-        
+
         Button(
-            onClick = { 
+            onClick = {
                 isScanning = true
                 scanScore = (0..100).random()
                 hasScanned = true
                 isScanning = false
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text("Scan Link")
         }
-        
+
         if (hasScanned && linkInput.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-            
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(12.dp))
                     .padding(12.dp)
             ) {
                 Column {
-                    Text(
-                        text = "Domain Info",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                    Text(
-                        text = linkInput,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Text(text = "Domain Info", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                    Text(text = linkInput, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
-            
             Spacer(modifier = Modifier.height(16.dp))
-            
             if (isScanning) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 RiskScoreMeter(score = scanScore)
@@ -261,67 +187,45 @@ fun APKAnalyzerCard() {
     var hasSelected by remember { mutableStateOf(false) }
     var isScanning by remember { mutableStateOf(false) }
     var scanScore by remember { mutableStateOf(0) }
-    
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(16.dp)
-            )
+            .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
             .padding(20.dp)
     ) {
-        Text(
-            text = "APK Analyzer",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Text(text = "APK Analyzer", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Button(
-            onClick = { 
+            onClick = {
                 hasSelected = true
                 isScanning = true
                 scanScore = (25..75).random()
                 isScanning = false
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Icon(Icons.Default.Apps, contentDescription = "Upload")
             Spacer(modifier = Modifier.width(8.dp))
             Text("Upload APK")
         }
-        
+
         if (hasSelected) {
             Spacer(modifier = Modifier.height(16.dp))
-            
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(12.dp))
                     .padding(12.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     APKInfoRow("Package", "com.example.app")
                     APKInfoRow("Version", "2.1.0")
                     APKInfoRow("Developer", "Example Corp")
-                    
                     Spacer(modifier = Modifier.height(8.dp))
-                    
-                    Text(
-                        text = "Permissions (15)",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    
+                    Text(text = "Permissions (15)", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         PermissionTag("android.permission.INTERNET")
                         PermissionTag("android.permission.READ_CONTACTS")
@@ -329,17 +233,10 @@ fun APKAnalyzerCard() {
                     }
                 }
             }
-            
             Spacer(modifier = Modifier.height(16.dp))
-            
             if (isScanning) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 RiskScoreMeter(score = scanScore)
@@ -350,21 +247,9 @@ fun APKAnalyzerCard() {
 
 @Composable
 fun APKInfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        )
-        Text(
-            text = value,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+        Text(text = value, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
     }
 }
 
@@ -372,16 +257,9 @@ fun APKInfoRow(label: String, value: String) {
 fun PermissionTag(permission: String) {
     Box(
         modifier = Modifier
-            .background(
-                color = SuspiciousYellow.copy(alpha = 0.15f),
-                shape = RoundedCornerShape(6.dp)
-            )
+            .background(color = SuspiciousYellow.copy(alpha = 0.15f), shape = RoundedCornerShape(6.dp))
             .padding(6.dp)
     ) {
-        Text(
-            text = permission,
-            fontSize = 10.sp,
-            color = SuspiciousYellow
-        )
+        Text(text = permission, fontSize = 10.sp, color = SuspiciousYellow)
     }
 }

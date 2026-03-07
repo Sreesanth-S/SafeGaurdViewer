@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.InsertDriveFile
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,9 +15,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.safeguard.viewer.ui.theme.SafeGreen
-import com.safeguard.viewer.ui.theme.SuspiciousYellow
-import com.safeguard.viewer.ui.theme.MaliciousRed
 
 @Composable
 fun RecentActivityItem(
@@ -27,13 +23,6 @@ fun RecentActivityItem(
     icon: ImageVector = Icons.Default.InsertDriveFile,
     modifier: Modifier = Modifier
 ) {
-    val badgeColor = when (riskLevel.lowercase()) {
-        "safe" -> SafeGreen
-        "suspicious" -> SuspiciousYellow
-        "malicious" -> MaliciousRed
-        else -> SafeGreen
-    }
-    
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -63,7 +52,7 @@ fun RecentActivityItem(
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
-        
+
         RiskIndicatorBadge(riskLevel = riskLevel)
     }
 }

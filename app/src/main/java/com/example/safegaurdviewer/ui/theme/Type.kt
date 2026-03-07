@@ -1,4 +1,4 @@
-package com.example.safegaurdviewer.theme
+package com.example.safegaurdviewer.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -5,15 +5,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.safegaurdviewer.ui.components.QuickActionButton
+import com.example.safegaurdviewer.ui.components.RecentActivityItem
+import com.example.safegaurdviewer.ui.components.SecurityStatusCard
 import com.example.safegaurdviewer.ui.navigations.Screen
-import com.safeguard.viewer.ui.components.*
 
 @Composable
 fun DashboardScreen(navController: NavController) {
@@ -25,7 +28,6 @@ fun DashboardScreen(navController: NavController) {
         contentPadding = PaddingValues(16.dp)
     ) {
         item {
-            // App Header
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "SafeGuard Viewer",
@@ -41,9 +43,8 @@ fun DashboardScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
-        
+
         item {
-            // Security Status Card
             SecurityStatusCard(
                 status = "Protected",
                 lastScanTime = "Today at 2:45 PM",
@@ -51,9 +52,8 @@ fun DashboardScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(24.dp))
         }
-        
+
         item {
-            // Quick Actions Grid
             Text(
                 text = "Quick Actions",
                 fontSize = 16.sp,
@@ -61,7 +61,7 @@ fun DashboardScreen(navController: NavController) {
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             Column {
                 Row(
                     modifier = Modifier
@@ -113,9 +113,8 @@ fun DashboardScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
-        
+
         item {
-            // Recent Activity
             Text(
                 text = "Recent Activity",
                 fontSize = 16.sp,
@@ -123,7 +122,7 @@ fun DashboardScreen(navController: NavController) {
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 RecentActivityItem(
                     fileName = "file.pdf",

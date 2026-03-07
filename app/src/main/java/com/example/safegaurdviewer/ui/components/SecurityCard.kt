@@ -12,12 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.safeguard.viewer.ui.theme.SafeGreen
-import com.safeguard.viewer.ui.theme.SuspiciousYellow
+import com.example.safegaurdviewer.ui.theme.SafeGreen
+import com.example.safegaurdviewer.ui.theme.SuspiciousYellow
 
 @Composable
 fun SecurityStatusCard(
@@ -28,7 +27,7 @@ fun SecurityStatusCard(
 ) {
     val isProtected = status == "Protected"
     val statusColor = if (isProtected) SafeGreen else SuspiciousYellow
-    
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -65,9 +64,9 @@ fun SecurityStatusCard(
                     modifier = Modifier.size(48.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -91,7 +90,7 @@ fun SecurityStatusCard(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-                
+
                 Column {
                     Text(
                         text = "Threats Detected",

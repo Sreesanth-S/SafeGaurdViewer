@@ -13,9 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.safegaurdviewer.ui.screens.*
-import com.example.safegaurdviewer.navigations.BottomNavigation
-import com.example.safegaurdviewer.navigations.Screen
+import com.example.safegaurdviewer.ui.screens.DashboardScreen
+import com.example.safegaurdviewer.ui.screens.ScanCenterScreen
+import com.example.safegaurdviewer.ui.screens.ScanHistoryScreen
+import com.example.safegaurdviewer.ui.screens.SecureViewerScreen
+import com.example.safegaurdviewer.ui.screens.ThreatDetailsScreen
+import com.example.safegaurdviewer.ui.navigations.BottomNavigation
+import com.example.safegaurdviewer.ui.navigations.Screen
 import com.example.safegaurdviewer.ui.theme.SafeGuardTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,8 +48,8 @@ fun SafeGuardApp() {
         NavHost(
             navController = navController,
             startDestination = Screen.Dashboard.route,
-            modifier = Modifier.padding(innerPadding) // This prevents overlap
-        ){
+            modifier = Modifier.padding(innerPadding)
+        ) {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(navController)
             }
@@ -56,7 +60,6 @@ fun SafeGuardApp() {
                 ScanHistoryScreen(navController)
             }
             composable(Screen.Settings.route) {
-                // Placeholder until SettingsScreen is fully implemented
                 Surface(modifier = Modifier.fillMaxSize()) { }
             }
             composable(Screen.SecureViewer.route) {

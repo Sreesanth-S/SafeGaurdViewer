@@ -1,6 +1,7 @@
 package com.example.safegaurdviewer.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,10 +13,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.safegaurdviewer.ui.components.RiskIndicatorBadge
 
 data class ScanHistoryItem(
     val id: Int,
@@ -29,7 +32,7 @@ data class ScanHistoryItem(
 fun ScanHistoryScreen(navController: NavController) {
     var selectedFilter by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
-    
+
     val allItems = listOf(
         ScanHistoryItem(1, "financial_report.pdf", "File", "Safe", "Mar 7, 2:45 PM"),
         ScanHistoryItem(2, "bank_app.apk", "APK", "Suspicious", "Mar 7, 1:30 PM"),
@@ -38,7 +41,7 @@ fun ScanHistoryScreen(navController: NavController) {
         ScanHistoryItem(5, "app.apk", "APK", "Safe", "Mar 5, 4:30 PM"),
         ScanHistoryItem(6, "phishing-email.html", "Link", "Malicious", "Mar 5, 2:00 PM"),
     )
-    
+
     val filteredItems = allItems.filter { item ->
         val matchesFilter = when (selectedFilter) {
             "Files" -> item.type == "File"
@@ -49,7 +52,7 @@ fun ScanHistoryScreen(navController: NavController) {
         val matchesSearch = item.name.contains(searchQuery, ignoreCase = true)
         matchesFilter && matchesSearch
     }
-    
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -66,16 +69,13 @@ fun ScanHistoryScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(20.dp))
         }
-        
+
         item {
-            // Search Bar
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 placeholder = { Text("Search scans...") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(44.dp),
+                modifier = Modifier.fillMaxWidth(),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -85,9 +85,8 @@ fun ScanHistoryScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
-        
+
         item {
-            // Filter Chips
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,7 +109,7 @@ fun ScanHistoryScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
-        
+
         items(filteredItems) { item ->
             HistoryItemCard(item = item)
             Spacer(modifier = Modifier.height(8.dp))
@@ -120,6 +119,12 @@ fun ScanHistoryScreen(navController: NavController) {
 
 @Composable
 fun HistoryItemCard(item: ScanHistoryItem) {
+    val typeIcon: ImageVector = when (item.type) {
+        "APK" -> Icons.Default.Apps
+        "Link" -> Icons.Default.Link
+        else -> Icons.Default.InsertDriveFile
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,4 +141,31 @@ fun HistoryItemCard(item: ScanHistoryItem) {
         ) {
             Row(
                 modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = typeIcon,
+                    contentDescription = item.type,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = item.name,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = item.date,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+
+            RiskIndicatorBadge(riskLevel = item.riskLevel)
+        }
+    }
+}

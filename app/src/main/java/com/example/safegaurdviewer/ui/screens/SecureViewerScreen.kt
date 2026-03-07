@@ -10,13 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.safegaurdviewer.ui.navigations.Screen
-import com.safeguard.viewer.ui.theme.MaliciousRed
-import com.safeguard.viewer.ui.theme.SafeGreen
+import com.example.safegaurdviewer.ui.theme.MaliciousRed
+import com.example.safegaurdviewer.ui.theme.SafeGreen
 
 @Composable
 fun SecureViewerScreen(navController: NavController) {
@@ -29,9 +30,7 @@ fun SecureViewerScreen(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                )
+                .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
                 .padding(12.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -54,7 +53,7 @@ fun SecureViewerScreen(navController: NavController) {
                 )
             }
         }
-        
+
         // Content Viewer
         Box(
             modifier = Modifier
@@ -75,57 +74,27 @@ fun SecureViewerScreen(navController: NavController) {
                     modifier = Modifier.size(64.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "document.pdf",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "Viewing in isolated sandbox environment",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
+                Text(text = "document.pdf", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                Text(text = "Viewing in isolated sandbox environment", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
             }
         }
-        
+
         // Security Restrictions
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
+                .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .padding(16.dp)
         ) {
             Column {
-                Text(
-                    text = "Security Restrictions",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Text(text = "Security Restrictions", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(12.dp))
-                
-                SecurityRestrictionItem(
-                    icon = Icons.Default.Block,
-                    text = "Scripts blocked",
-                    color = SafeGreen
-                )
-                SecurityRestrictionItem(
-                    icon = Icons.Default.Download,
-                    text = "External downloads disabled",
-                    color = SafeGreen
-                )
-                SecurityRestrictionItem(
-                    icon = Icons.Default.Wifi,
-                    text = "Network access restricted",
-                    color = SafeGreen
-                )
+                SecurityRestrictionItem(icon = Icons.Default.Block, text = "Scripts blocked", color = SafeGreen)
+                SecurityRestrictionItem(icon = Icons.Default.Download, text = "External downloads disabled", color = SafeGreen)
+                SecurityRestrictionItem(icon = Icons.Default.Wifi, text = "Network access restricted", color = SafeGreen)
             }
         }
-        
+
         // Action Buttons
         Row(
             modifier = Modifier
@@ -136,37 +105,28 @@ fun SecureViewerScreen(navController: NavController) {
         ) {
             OutlinedButton(
                 onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(44.dp)
+                modifier = Modifier.weight(1f).height(44.dp)
             ) {
                 Icon(Icons.Default.Close, contentDescription = "Close")
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Close File")
             }
-            
+
             OutlinedButton(
                 onClick = { },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(44.dp),
-                colors = OutlinedButtonDefaults.outlinedButtonColors(
-                    contentColor = MaliciousRed
-                )
+                modifier = Modifier.weight(1f).height(44.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaliciousRed),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaliciousRed)
             ) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete")
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Delete")
             }
-            
+
             Button(
                 onClick = { navController.navigate(Screen.ThreatDetails.route) },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(44.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                modifier = Modifier.weight(1f).height(44.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Icon(Icons.Default.Info, contentDescription = "Details")
                 Spacer(modifier = Modifier.width(8.dp))
@@ -176,9 +136,10 @@ fun SecureViewerScreen(navController: NavController) {
     }
 }
 
+// FIX: Changed parameter type from Icons.Outlined (wrong) to ImageVector (correct)
 @Composable
 fun SecurityRestrictionItem(
-    icon: Icons.Outlined,
+    icon: ImageVector,
     text: String,
     color: Color
 ) {
@@ -195,10 +156,6 @@ fun SecurityRestrictionItem(
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = text,
-            fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Text(text = text, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
     }
 }

@@ -12,9 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.safeguard.viewer.ui.theme.SafeGreen
-import com.safeguard.viewer.ui.theme.SuspiciousYellow
-import com.safeguard.viewer.ui.theme.MaliciousRed
+import com.example.safegaurdviewer.ui.theme.MaliciousRed
+import com.example.safegaurdviewer.ui.theme.SafeGreen
+import com.example.safegaurdviewer.ui.theme.SuspiciousYellow
 
 @Composable
 fun RiskScoreMeter(
@@ -26,18 +26,17 @@ fun RiskScoreMeter(
         score <= 70 -> SuspiciousYellow
         else -> MaliciousRed
     }
-    
+
     val riskLevel = when {
         score <= 30 -> "Safe"
         score <= 70 -> "Suspicious"
         else -> "Malicious"
     }
-    
+
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Circular Risk Score Display
         Box(
             modifier = Modifier
                 .size(120.dp)
@@ -47,9 +46,7 @@ fun RiskScoreMeter(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = score.toString(),
                     fontSize = 40.sp,
@@ -63,10 +60,9 @@ fun RiskScoreMeter(
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
-        // Risk Level Badge
+
         Box(
             modifier = Modifier
                 .background(
@@ -96,7 +92,7 @@ fun RiskIndicatorBadge(
         "malicious" -> Pair(MaliciousRed.copy(alpha = 0.15f), MaliciousRed)
         else -> Pair(Color.Gray.copy(alpha = 0.15f), Color.Gray)
     }
-    
+
     Box(
         modifier = modifier
             .background(

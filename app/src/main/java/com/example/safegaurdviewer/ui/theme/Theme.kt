@@ -1,25 +1,14 @@
-package com.example.safegaurdviewer.theme
+package com.example.safegaurdviewer.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-
-// SafeGuard Colors
-val DarkBlue = Color(0xFF0B1F3A)
-val SafeGreen = Color(0xFF2ECC71)
-val SuspiciousYellow = Color(0xFFF1C40F)
-val MaliciousRed = Color(0xFFE74C3C)
-val White = Color(0xFFFFFFFF)
-val LightGray = Color(0xFFF5F5F5)
-val DarkGray = Color(0xFF1A1A1A)
-val BorderGray = Color(0xFF2D2D2D)
 
 private val SafeGuardColorScheme = darkColorScheme(
-    primary = Color(0xFF1E88E5),
+    primary = androidx.compose.ui.graphics.Color(0xFF1E88E5),
     onPrimary = White,
     primaryContainer = DarkBlue,
-    onPrimaryContainer = Color(0xFFE3F2FD),
+    onPrimaryContainer = androidx.compose.ui.graphics.Color(0xFFE3F2FD),
     secondary = SafeGreen,
     onSecondary = DarkBlue,
     error = MaliciousRed,
@@ -29,7 +18,7 @@ private val SafeGuardColorScheme = darkColorScheme(
     surface = DarkGray,
     onSurface = White,
     surfaceVariant = BorderGray,
-    onSurfaceVariant = Color(0xFFB0B0B0)
+    onSurfaceVariant = androidx.compose.ui.graphics.Color(0xFFB0B0B0)
 )
 
 @Composable

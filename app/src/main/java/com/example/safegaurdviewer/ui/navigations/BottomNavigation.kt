@@ -2,10 +2,15 @@ package com.example.safegaurdviewer.ui.navigations
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
@@ -15,7 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 fun BottomNavigation(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    
+
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -34,7 +39,7 @@ fun BottomNavigation(navController: NavController) {
                 selectedTextColor = MaterialTheme.colorScheme.primary
             )
         )
-        
+
         NavigationBarItem(
             icon = { Icon(Icons.Default.Security, contentDescription = "Scan") },
             label = { Text("Scan") },
@@ -49,7 +54,7 @@ fun BottomNavigation(navController: NavController) {
                 selectedTextColor = MaterialTheme.colorScheme.primary
             )
         )
-        
+
         NavigationBarItem(
             icon = { Icon(Icons.Default.History, contentDescription = "History") },
             label = { Text("History") },
@@ -64,7 +69,7 @@ fun BottomNavigation(navController: NavController) {
                 selectedTextColor = MaterialTheme.colorScheme.primary
             )
         )
-        
+
         NavigationBarItem(
             icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
             label = { Text("Settings") },

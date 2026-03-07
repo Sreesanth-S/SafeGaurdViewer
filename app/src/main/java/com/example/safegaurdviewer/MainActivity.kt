@@ -44,10 +44,8 @@ fun SafeGuardApp() {
         NavHost(
             navController = navController,
             startDestination = Screen.Dashboard.route,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
+            modifier = Modifier.padding(innerPadding) // This prevents overlap
+        ){
             composable(Screen.Dashboard.route) {
                 DashboardScreen(navController)
             }

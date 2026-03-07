@@ -1,0 +1,139 @@
+package com.example.safegaurdviewer.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+
+data class ScanHistoryItem(
+    val id: Int,
+    val name: String,
+    val type: String,
+    val riskLevel: String,
+    val date: String
+)
+
+@Composable
+fun ScanHistoryScreen(navController: NavController) {
+    var selectedFilter by remember { mutableStateOf("All") }
+    var searchQuery by remember { mutableStateOf("") }
+    
+    val allItems = listOf(
+        ScanHistoryItem(1, "financial_report.pdf", "File", "Safe", "Mar 7, 2:45 PM"),
+        ScanHistoryItem(2, "bank_app.apk", "APK", "Suspicious", "Mar 7, 1:30 PM"),
+        ScanHistoryItem(3, "login-link.com", "Link", "Malicious", "Mar 6, 11:20 AM"),
+        ScanHistoryItem(4, "image.jpg", "File", "Safe", "Mar 6, 9:15 AM"),
+        ScanHistoryItem(5, "app.apk", "APK", "Safe", "Mar 5, 4:30 PM"),
+        ScanHistoryItem(6, "phishing-email.html", "Link", "Malicious", "Mar 5, 2:00 PM"),
+    )
+    
+    val filteredItems = allItems.filter { item ->
+        val matchesFilter = when (selectedFilter) {
+            "Files" -> item.type == "File"
+            "Links" -> item.type == "Link"
+            "APK" -> item.type == "APK"
+            else -> true
+        }
+        val matchesSearch = item.name.contains(searchQuery, ignoreCase = true)
+        matchesFilter && matchesSearch
+    }
+    
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(bottom = 80.dp),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        item {
+            Text(
+                text = "Scan History",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+        
+        item {
+            // Search Bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Search scans...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp),
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                )
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        
+        item {
+            // Filter Chips
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf("All", "Files", "Links", "APK").forEach { filter ->
+                    FilterChip(
+                        selected = selectedFilter == filter,
+                        onClick = { selectedFilter = filter },
+                        label = { Text(filter) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            labelColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        
+        items(filteredItems) { item ->
+            HistoryItemCard(item = item)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun HistoryItemCard(item: ScanHistoryItem) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment

@@ -7,12 +7,13 @@ import kotlinx.coroutines.delay
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import com.example.safegaurdviewer.scanner.ScanOutput
 
 object FileScanner {
 
     private const val API_KEY = "96bf27fd3d0dee600d159399083953c40175bf2f55d298babedea2649640149f"
 
-    suspend fun scanFile(context: Context, uri: Uri): Int {
+    suspend fun scanFile(context: Context, uri: Uri): ScanOutput {
 
         try {
 
@@ -87,14 +88,23 @@ object FileScanner {
             val total =
                 malicious + suspicious + harmless + undetected
 
-            if (total == 0) return 0
+            if (total == 0) return ScanOutput(0,0,0)
 
-            val riskScore =
+            val rawScore =
                 ((malicious * 2 + suspicious).toFloat() / total * 100).toInt()
 
-            println("Risk Score: $riskScore")
+            val riskScore = rawScore.coerceAtMost(100)
+            return ScanOutput(
+                score = riskScore,
+                malicious = malicious,
+                total = total
+            )
 
-            return riskScore
+            return ScanOutput(
+                score = riskScore,
+                malicious = malicious,
+                total = total
+            )
 
         } catch (e: Exception) {
 
@@ -102,7 +112,7 @@ object FileScanner {
             e.printStackTrace()
 
             // fallback safe value
-            return 10
+            return ScanOutput(10, 0, 0)
         }
     }
 }

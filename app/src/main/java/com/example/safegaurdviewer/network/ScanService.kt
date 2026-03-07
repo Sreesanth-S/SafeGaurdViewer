@@ -7,6 +7,8 @@ import okhttp3.MultipartBody
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import okhttp3.RequestBody
+import retrofit2.http.Body
 
 
 interface ScanService {
@@ -29,4 +31,10 @@ interface ScanService {
         @Header("x-apikey") apiKey: String,
         @Path("id") id: String
     ): AnalysisResponse
+
+    @GET("api/v3/urls/{id}")
+    suspend fun getUrlReport(
+        @Header("x-apikey") apiKey: String,
+        @Path("id") urlId: String
+    ): UrlAnalysisResponse
 }

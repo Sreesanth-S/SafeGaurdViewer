@@ -20,11 +20,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.safegaurdviewer.executor.FileExecutor
 import com.example.safegaurdviewer.scanner.FileScanner
+import com.example.safegaurdviewer.scanner.LinkScanner
 import com.example.safegaurdviewer.ui.components.RiskScoreMeter
 import com.example.safegaurdviewer.ui.theme.SuspiciousYellow
+import com.example.safegaurdviewer.data.ScanHistoryStore
+import com.example.safegaurdviewer.data.ScanResult
+import com.example.safegaurdviewer.data.IncomingFileHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun ScanCenterScreen(navController: NavController) {
@@ -43,8 +49,7 @@ fun ScanCenterScreen(navController: NavController) {
             Text(
                 text = "Scan Center",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -52,23 +57,17 @@ fun ScanCenterScreen(navController: NavController) {
         item {
             TabRow(selectedTabIndex = selectedTab) {
 
-                Tab(
-                    selected = selectedTab == 0,
+                Tab(selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("File") }
-                )
+                    text = { Text("File") })
 
-                Tab(
-                    selected = selectedTab == 1,
+                Tab(selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("Link") }
-                )
+                    text = { Text("Link") })
 
-                Tab(
-                    selected = selectedTab == 2,
+                Tab(selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    text = { Text("APK") }
-                )
+                    text = { Text("APK") })
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -92,9 +91,54 @@ fun FileScannerCard() {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val incomingUri = IncomingFileHolder.uri
+
+    LaunchedEffect(incomingUri) {
+
+        if (incomingUri != null) {
+
+            scope.launch {
+
+                isScanning = true
+
+                val result = FileScanner.scanFile(context, incomingUri)
+
+                val score = result.score
+
+                scanScore = score
+                hasScanned = true
+                isScanning = false
+
+                val riskLevel = when {
+                    score <= 30 -> "Safe"
+                    score <= 70 -> "Suspicious"
+                    else -> "Malicious"
+                }
+
+                val formatter =
+                    SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
+
+                ScanHistoryStore.history.add(
+                    0,
+                    ScanResult(
+                        name = incomingUri.lastPathSegment ?: "external file",
+                        type = "File",
+                        riskLevel = riskLevel,
+                        date = formatter.format(Date())
+                    )
+                )
+
+                if (score < 30) {
+                    FileExecutor.openFile(context, incomingUri)
+                }
+            }
+
+            IncomingFileHolder.uri = null
+        }
+    }
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
 
         if (uri != null) {
@@ -107,13 +151,34 @@ fun FileScannerCard() {
 
                 try {
 
-                    val score = withContext(Dispatchers.IO) {
+                    val result = withContext(Dispatchers.IO) {
                         FileScanner.scanFile(context, uri)
                     }
+
+                    val score = result.score
 
                     scanScore = score
                     hasScanned = true
                     isScanning = false
+
+                    val riskLevel = when {
+                        score <= 30 -> "Safe"
+                        score <= 70 -> "Suspicious"
+                        else -> "Malicious"
+                    }
+
+                    val formatter =
+                        SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
+
+                    ScanHistoryStore.history.add(
+                        0,
+                        ScanResult(
+                            name = selectedUri?.lastPathSegment ?: "file",
+                            type = "File",
+                            riskLevel = riskLevel,
+                            date = formatter.format(Date())
+                        )
+                    )
 
                     if (score < 30) {
                         FileExecutor.openFile(context, uri)
@@ -135,11 +200,7 @@ fun FileScannerCard() {
             .padding(20.dp)
     ) {
 
-        Text(
-            text = "File Scanner",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text("File Scanner", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -147,7 +208,6 @@ fun FileScannerCard() {
             onClick = { launcher.launch("*/*") },
             modifier = Modifier.fillMaxWidth()
         ) {
-
             Icon(Icons.Default.Folder, contentDescription = "Select File")
             Spacer(modifier = Modifier.width(8.dp))
             Text("Select File")
@@ -160,10 +220,7 @@ fun FileScannerCard() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.background,
-                        RoundedCornerShape(12.dp)
-                    )
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(12.dp))
                     .padding(12.dp)
             ) {
 
@@ -176,8 +233,7 @@ fun FileScannerCard() {
 
                     Text(
                         text = "Analyzing file...",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        fontSize = 12.sp
                     )
                 }
             }
@@ -191,13 +247,11 @@ fun FileScannerCard() {
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-
                 CircularProgressIndicator()
             }
         }
 
         if (hasScanned && !isScanning) {
-
             RiskScoreMeter(score = scanScore)
         }
     }
@@ -207,8 +261,11 @@ fun FileScannerCard() {
 fun LinkScannerCard() {
 
     var linkInput by remember { mutableStateOf("") }
+    var isScanning by remember { mutableStateOf(false) }
     var scanScore by remember { mutableStateOf(0) }
     var hasScanned by remember { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -217,11 +274,7 @@ fun LinkScannerCard() {
             .padding(20.dp)
     ) {
 
-        Text(
-            text = "Link Scanner",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text("Link Scanner", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -230,17 +283,26 @@ fun LinkScannerCard() {
             onValueChange = { linkInput = it },
             label = { Text("Paste suspicious URL") },
             modifier = Modifier.fillMaxWidth(),
-            leadingIcon = {
-                Icon(Icons.Default.Link, contentDescription = "Link")
-            }
+            leadingIcon = { Icon(Icons.Default.Link, null) }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
             onClick = {
-                scanScore = (0..100).random()
-                hasScanned = true
+
+                if (linkInput.isEmpty()) return@Button
+
+                scope.launch {
+
+                    isScanning = true
+
+                    val score = LinkScanner.scanUrl(linkInput)
+
+                    scanScore = score
+                    hasScanned = true
+                    isScanning = false
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -251,7 +313,20 @@ fun LinkScannerCard() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            RiskScoreMeter(score = scanScore)
+            if (isScanning) {
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+
+            } else {
+
+                RiskScoreMeter(score = scanScore)
+
+            }
         }
     }
 }
@@ -269,26 +344,37 @@ fun APKAnalyzerCard() {
             .padding(20.dp)
     ) {
 
-        Text(
-            text = "APK Analyzer",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text("APK Analyzer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+        val launcher = rememberLauncherForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+
+            if (uri != null) {
+
+                scope.launch {
+
+                    val result = FileScanner.scanFile(context, uri)
+
+                    scanScore = result.score
+                    hasScanned = true
+                }
+            }
+        }
         Button(
             onClick = {
-                scanScore = (25..75).random()
-                hasScanned = true
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
 
-            Icon(Icons.Default.Apps, contentDescription = "Upload APK")
-            Spacer(modifier = Modifier.width(8.dp))
+                launcher.launch("application/vnd.android.package-archive")
+
+            }
+        ) {
             Text("Upload APK")
         }
+
 
         if (hasScanned) {
 
@@ -304,10 +390,7 @@ fun PermissionTag(permission: String) {
 
     Box(
         modifier = Modifier
-            .background(
-                SuspiciousYellow.copy(alpha = 0.15f),
-                RoundedCornerShape(6.dp)
-            )
+            .background(SuspiciousYellow.copy(alpha = 0.15f), RoundedCornerShape(6.dp))
             .padding(6.dp)
     ) {
 

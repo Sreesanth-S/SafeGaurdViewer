@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.safegaurdviewer.ui.components.RiskIndicatorBadge
+import com.example.safegaurdviewer.data.ScanHistoryStore
 
 data class ScanHistoryItem(
     val id: Int,
@@ -33,14 +34,17 @@ fun ScanHistoryScreen(navController: NavController) {
     var selectedFilter by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
 
-    val allItems = listOf(
-        ScanHistoryItem(1, "financial_report.pdf", "File", "Safe", "Mar 7, 2:45 PM"),
-        ScanHistoryItem(2, "bank_app.apk", "APK", "Suspicious", "Mar 7, 1:30 PM"),
-        ScanHistoryItem(3, "login-link.com", "Link", "Malicious", "Mar 6, 11:20 AM"),
-        ScanHistoryItem(4, "image.jpg", "File", "Safe", "Mar 6, 9:15 AM"),
-        ScanHistoryItem(5, "app.apk", "APK", "Safe", "Mar 5, 4:30 PM"),
-        ScanHistoryItem(6, "phishing-email.html", "Link", "Malicious", "Mar 5, 2:00 PM"),
-    )
+
+
+    val allItems = ScanHistoryStore.history.mapIndexed { index, item ->
+        ScanHistoryItem(
+            id = index,
+            name = item.name,
+            type = item.type,
+            riskLevel = item.riskLevel,
+            date = item.date
+        )
+    }
 
     val filteredItems = allItems.filter { item ->
         val matchesFilter = when (selectedFilter) {

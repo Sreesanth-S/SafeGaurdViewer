@@ -21,10 +21,15 @@ import com.example.safegaurdviewer.ui.screens.ThreatDetailsScreen
 import com.example.safegaurdviewer.ui.navigations.BottomNavigation
 import com.example.safegaurdviewer.ui.navigations.Screen
 import com.example.safegaurdviewer.ui.theme.SafeGuardTheme
+import android.content.Intent
+import android.net.Uri
+
+import com.example.safegaurdviewer.data.IncomingFileHolder
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleIncomingFile(intent)
         setContent {
             SafeGuardTheme {
                 Surface(
@@ -37,7 +42,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+private fun handleIncomingFile(intent: Intent?) {
 
+    if (intent?.action == Intent.ACTION_VIEW) {
+
+        val uri = intent.data
+
+        if (uri != null) {
+
+            println("FILE RECEIVED FROM OPEN WITH: $uri")
+
+            // You can store this URI somewhere
+            IncomingFileHolder.uri = uri
+        }
+    }
+}
 @Composable
 fun SafeGuardApp() {
     val navController = rememberNavController()

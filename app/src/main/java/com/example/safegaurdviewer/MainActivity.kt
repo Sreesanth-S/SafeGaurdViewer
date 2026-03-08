@@ -1,5 +1,6 @@
 package com.example.safegaurdviewer
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,18 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.safegaurdviewer.data.IncomingFileHolder
+import com.example.safegaurdviewer.ui.navigations.BottomNavigation
+import com.example.safegaurdviewer.ui.navigations.Screen
 import com.example.safegaurdviewer.ui.screens.DashboardScreen
 import com.example.safegaurdviewer.ui.screens.ScanCenterScreen
 import com.example.safegaurdviewer.ui.screens.ScanHistoryScreen
 import com.example.safegaurdviewer.ui.screens.SecureViewerScreen
 import com.example.safegaurdviewer.ui.screens.ThreatDetailsScreen
-import com.example.safegaurdviewer.ui.navigations.BottomNavigation
-import com.example.safegaurdviewer.ui.navigations.Screen
 import com.example.safegaurdviewer.ui.theme.SafeGuardTheme
-import android.content.Intent
-import android.net.Uri
-
-import com.example.safegaurdviewer.data.IncomingFileHolder
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,22 +39,17 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-private fun handleIncomingFile(intent: Intent?) {
 
-    if (intent?.action == Intent.ACTION_VIEW) {
-
-        val uri = intent.data
-
-        if (uri != null) {
-
-            println("FILE RECEIVED FROM OPEN WITH: $uri")
-
-            // You can store this URI somewhere
-            IncomingFileHolder.uri = uri
+    private fun handleIncomingFile(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_VIEW) {
+            val uri = intent.data
+            if (uri != null) {
+                IncomingFileHolder.uri = uri
+            }
         }
     }
 }
+
 @Composable
 fun SafeGuardApp() {
     val navController = rememberNavController()
@@ -79,7 +72,7 @@ fun SafeGuardApp() {
                 ScanHistoryScreen(navController)
             }
             composable(Screen.Settings.route) {
-                Surface(modifier = Modifier.fillMaxSize()) { }
+                Surface(modifier = Modifier.fillMaxSize()) {}
             }
             composable(Screen.SecureViewer.route) {
                 SecureViewerScreen(navController)

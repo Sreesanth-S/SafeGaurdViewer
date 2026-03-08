@@ -1,6 +1,8 @@
 package com.example.safegaurdviewer.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,13 +15,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.safegaurdviewer.ui.components.RiskIndicatorBadge
 import com.example.safegaurdviewer.data.ScanHistoryStore
+import com.example.safegaurdviewer.ui.theme.*
 
 data class ScanHistoryItem(
     val id: Int,
@@ -34,16 +40,8 @@ fun ScanHistoryScreen(navController: NavController) {
     var selectedFilter by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
 
-
-
     val allItems = ScanHistoryStore.history.mapIndexed { index, item ->
-        ScanHistoryItem(
-            id = index,
-            name = item.name,
-            type = item.type,
-            riskLevel = item.riskLevel,
-            date = item.date
-        )
+        ScanHistoryItem(id = index, name = item.name, type = item.type, riskLevel = item.riskLevel, date = item.date)
     }
 
     val filteredItems = allItems.filter { item ->
@@ -58,85 +56,134 @@ fun ScanHistoryScreen(navController: NavController) {
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(bottom = 80.dp),
-        contentPadding = PaddingValues(16.dp)
+        modifier = Modifier.fillMaxSize().background(CyberBlack),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 100.dp)
     ) {
         item {
             Text(
-                text = "Scan History",
-                fontSize = 28.sp,
+                text = "SCAN HISTORY",
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = TextPrimary,
+                fontFamily = FontFamily.Monospace,
+                letterSpacing = 3.sp
+            )
+            Text(
+                text = "${allItems.size} total scans recorded",
+                fontSize = 13.sp,
+                color = TextSecondary
             )
             Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
+            // Styled search field
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Search scans...") },
+                placeholder = { Text("Search scans...", fontSize = 13.sp, color = TextMuted, fontFamily = FontFamily.Monospace) },
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(18.dp)) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                )
+                    focusedBorderColor = CyberCyan,
+                    unfocusedBorderColor = CyberBorder,
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    cursorColor = CyberCyan,
+                    focusedContainerColor = CyberSurface,
+                    unfocusedContainerColor = CyberSurface
+                ),
+                shape = RoundedCornerShape(12.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
         }
 
         item {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf("All", "Files", "Links", "APK").forEach { filter ->
-                    FilterChip(
-                        selected = selectedFilter == filter,
-                        onClick = { selectedFilter = filter },
-                        label = { Text(filter) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            labelColor = MaterialTheme.colorScheme.onSurface
+                    val isSelected = selectedFilter == filter
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isSelected) CyberCyan.copy(alpha = 0.15f) else CyberSurface)
+                            .border(1.dp, if (isSelected) CyberCyan.copy(alpha = 0.6f) else CyberBorder, RoundedCornerShape(8.dp))
+                            .clickable { selectedFilter = filter }
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = filter.uppercase(),
+                            fontSize = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isSelected) CyberCyan else TextSecondary,
+                            fontFamily = FontFamily.Monospace,
+                            letterSpacing = 1.sp
                         )
-                    )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        items(filteredItems) { item ->
-            HistoryItemCard(item = item)
-            Spacer(modifier = Modifier.height(8.dp))
+        if (filteredItems.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(CyberSurface)
+                        .border(1.dp, CyberBorder, RoundedCornerShape(14.dp))
+                        .padding(40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = TextMuted, modifier = Modifier.size(36.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text("No results found", fontSize = 14.sp, color = TextSecondary)
+                        Text("Try a different filter or search term", fontSize = 12.sp, color = TextMuted)
+                    }
+                }
+            }
+        } else {
+            items(filteredItems) { item ->
+                CyberHistoryCard(item = item)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 }
 
 @Composable
-fun HistoryItemCard(item: ScanHistoryItem) {
+fun CyberHistoryCard(item: ScanHistoryItem) {
+    val (accent, label) = when (item.riskLevel.lowercase()) {
+        "safe" -> Pair(CyberGreen, "SAFE")
+        "suspicious" -> Pair(CyberYellow, "SUSPICIOUS")
+        "malicious" -> Pair(CyberRed, "MALICIOUS")
+        else -> Pair(TextSecondary, item.riskLevel.uppercase())
+    }
+
     val typeIcon: ImageVector = when (item.type) {
         "APK" -> Icons.Default.Apps
         "Link" -> Icons.Default.Link
         else -> Icons.Default.InsertDriveFile
     }
 
+    val typeColor: Color = when (item.type) {
+        "APK" -> CyberYellow
+        "Link" -> CyberPurple
+        else -> CyberCyan
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(12.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(CyberSurface)
+            .border(1.dp, accent.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
+            .padding(14.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -147,29 +194,55 @@ fun HistoryItemCard(item: ScanHistoryItem) {
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = typeIcon,
-                    contentDescription = item.type,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
+                // Type icon badge
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(typeColor.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                        .border(1.dp, typeColor.copy(alpha = 0.25f), RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(imageVector = typeIcon, contentDescription = item.type, tint = typeColor, modifier = Modifier.size(18.dp))
+                }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
                         text = item.name,
-                        fontSize = 14.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = TextPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = FontFamily.Monospace
                     )
+                    Spacer(modifier = Modifier.height(3.dp))
                     Text(
                         text = item.date,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        fontSize = 11.sp,
+                        color = TextSecondary
                     )
                 }
             }
-
-            RiskIndicatorBadge(riskLevel = item.riskLevel)
+            Spacer(modifier = Modifier.width(10.dp))
+            Box(
+                modifier = Modifier
+                    .background(accent.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                    .border(1.dp, accent.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                    .padding(horizontal = 8.dp, vertical = 5.dp)
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = accent,
+                    fontFamily = FontFamily.Monospace,
+                    letterSpacing = 1.sp
+                )
+            }
         }
     }
 }
+
+// Keep old name for compatibility
+@Composable
+fun HistoryItemCard(item: ScanHistoryItem) = CyberHistoryCard(item)

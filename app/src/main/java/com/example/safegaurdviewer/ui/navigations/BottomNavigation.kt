@@ -1,20 +1,23 @@
 package com.example.safegaurdviewer.ui.navigations
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.safegaurdviewer.ui.theme.*
 
 @Composable
 fun BottomNavigation(navController: NavController) {
@@ -22,67 +25,52 @@ fun BottomNavigation(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        containerColor = CyberDarkSurface,
+        contentColor = TextSecondary,
+        tonalElevation = 0.dp,
+        modifier = Modifier.border(
+            width = 1.dp,
+            color = CyberBorder,
+            shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
+        )
     ) {
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Dashboard, contentDescription = "Dashboard") },
-            label = { Text("Dashboard") },
-            selected = currentRoute == Screen.Dashboard.route,
-            onClick = {
-                navController.navigate(Screen.Dashboard.route) {
-                    popUpTo(Screen.Dashboard.route) { inclusive = true }
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.primary,
-                selectedTextColor = MaterialTheme.colorScheme.primary
-            )
+        val navItems = listOf(
+            Triple(Screen.Dashboard.route, Icons.Default.Dashboard, "Dashboard"),
+            Triple(Screen.Scan.route, Icons.Default.Security, "Scan"),
+            Triple(Screen.History.route, Icons.Default.History, "History"),
         )
 
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Security, contentDescription = "Scan") },
-            label = { Text("Scan") },
-            selected = currentRoute == Screen.Scan.route,
-            onClick = {
-                navController.navigate(Screen.Scan.route) {
-                    popUpTo(Screen.Dashboard.route)
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.primary,
-                selectedTextColor = MaterialTheme.colorScheme.primary
+        navItems.forEach { (route, icon, label) ->
+            val isSelected = currentRoute == route
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = label,
+                        modifier = Modifier.size(22.dp)
+                    )
+                },
+                label = {
+                    Text(
+                        text = label,
+                        fontSize = 10.sp,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                    )
+                },
+                selected = isSelected,
+                onClick = {
+                    navController.navigate(route) {
+                        popUpTo(Screen.Dashboard.route) { inclusive = route == Screen.Dashboard.route }
+                    }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = CyberCyan,
+                    selectedTextColor = CyberCyan,
+                    unselectedIconColor = TextSecondary,
+                    unselectedTextColor = TextMuted,
+                    indicatorColor = CyberCyan.copy(alpha = 0.12f)
+                )
             )
-        )
-
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.History, contentDescription = "History") },
-            label = { Text("History") },
-            selected = currentRoute == Screen.History.route,
-            onClick = {
-                navController.navigate(Screen.History.route) {
-                    popUpTo(Screen.Dashboard.route)
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.primary,
-                selectedTextColor = MaterialTheme.colorScheme.primary
-            )
-        )
-
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-            label = { Text("Settings") },
-            selected = currentRoute == Screen.Settings.route,
-            onClick = {
-                navController.navigate(Screen.Settings.route) {
-                    popUpTo(Screen.Dashboard.route)
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.primary,
-                selectedTextColor = MaterialTheme.colorScheme.primary
-            )
-        )
+        }
     }
 }

@@ -49,9 +49,16 @@ import com.example.safegaurdviewer.ui.theme.CyberRed
 import com.example.safegaurdviewer.ui.theme.CyberSurface
 import com.example.safegaurdviewer.ui.theme.TextPrimary
 import com.example.safegaurdviewer.ui.theme.TextSecondary
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.ui.viewinterop.AndroidView
+import java.net.URLDecoder
+
+
 
 @Composable
-fun SecureViewerScreen(navController: NavController) {
+fun SecureViewerScreen(navController: NavController,url:String) {
+    val decodedUrl = URLDecoder.decode(url, "UTF-8")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,46 +97,17 @@ fun SecureViewerScreen(navController: NavController) {
                 .padding(20.dp),
             contentAlignment = Alignment.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    modifier = Modifier
-                        .size(90.dp)
-                        .background(
-                            Brush.radialGradient(listOf(CyberCyan.copy(alpha = 0.15f), Color.Transparent)),
-                            RoundedCornerShape(20.dp)
-                        )
-                        .border(1.dp, CyberCyan.copy(alpha = 0.3f), RoundedCornerShape(20.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.InsertDriveFile, null, tint = CyberCyan, modifier = Modifier.size(44.dp))
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { context ->
+                    WebView(context).apply {
+                        webViewClient = WebViewClient()
+                        settings.javaScriptEnabled = true
+                        loadUrl(decodedUrl)
+                    }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = "document.pdf",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
-                    fontFamily = FontFamily.Monospace
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "Viewing in isolated sandbox environment", fontSize = 12.sp, color = TextSecondary)
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .background(CyberGreen.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
-                        .border(1.dp, CyberGreen.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = "SANDBOX ACTIVE",
-                        fontSize = 9.sp,
-                        color = CyberGreen,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace,
-                        letterSpacing = 1.sp
-                    )
-                }
-            }
+            )
+
         }
 
         // Restrictions + actions panel
@@ -141,70 +119,21 @@ fun SecureViewerScreen(navController: NavController) {
                 .border(1.dp, CyberBorder, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .padding(20.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .width(3.dp)
-                        .height(14.dp)
-                        .background(CyberCyan, RoundedCornerShape(2.dp))
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "SECURITY RESTRICTIONS",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextSecondary,
-                    fontFamily = FontFamily.Monospace,
-                    letterSpacing = 2.sp
-                )
-            }
-            Spacer(modifier = Modifier.height(14.dp))
-
-            SvRow(icon = Icons.Default.Block,    label = "Scripts blocked",             color = CyberGreen)
-            Spacer(modifier = Modifier.height(10.dp))
-            SvRow(icon = Icons.Default.Download, label = "External downloads disabled", color = CyberGreen)
-            Spacer(modifier = Modifier.height(10.dp))
-            SvRow(icon = Icons.Default.Wifi,     label = "Network access restricted",   color = CyberGreen)
-
-            Spacer(modifier = Modifier.height(20.dp))
-
             // Action buttons
             Row(modifier = Modifier.fillMaxWidth()) {
                 SvActionBtn(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
                     bg = CyberElevated,
                     borderColor = CyberBorder,
-                    onClick = { navController.popBackStack() }
+                    onClick = { navController.navigate(Screen.Scan.route) {
+                        popUpTo(Screen.Scan.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                    }
                 ) {
                     Icon(Icons.Default.Close, null, tint = TextSecondary, modifier = Modifier.size(15.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Close", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                SvActionBtn(
-                    modifier = Modifier.weight(1f),
-                    bg = CyberRed.copy(alpha = 0.1f),
-                    borderColor = CyberRed.copy(alpha = 0.4f),
-                    onClick = {}
-                ) {
-                    Icon(Icons.Default.Delete, null, tint = CyberRed, modifier = Modifier.size(15.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Delete", fontSize = 12.sp, color = CyberRed, fontWeight = FontWeight.Medium)
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                SvActionBtn(
-                    modifier = Modifier.weight(1f),
-                    bg = CyberCyan.copy(alpha = 0.12f),
-                    borderColor = CyberCyan.copy(alpha = 0.4f),
-                    onClick = { navController.navigate(Screen.ThreatDetails.route) }
-                ) {
-                    Icon(Icons.Default.Info, null, tint = CyberCyan, modifier = Modifier.size(15.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Details", fontSize = 12.sp, color = CyberCyan, fontWeight = FontWeight.Medium)
                 }
             }
         }

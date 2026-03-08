@@ -23,6 +23,9 @@ import com.example.safegaurdviewer.ui.screens.ScanHistoryScreen
 import com.example.safegaurdviewer.ui.screens.SecureViewerScreen
 import com.example.safegaurdviewer.ui.screens.ThreatDetailsScreen
 import com.example.safegaurdviewer.ui.theme.SafeGuardTheme
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,9 +77,16 @@ fun SafeGuardApp() {
             composable(Screen.Settings.route) {
                 Surface(modifier = Modifier.fillMaxSize()) {}
             }
-            composable(Screen.SecureViewer.route) {
-                SecureViewerScreen(navController)
+            composable(
+                route = "secure_viewer/{url}",
+                arguments = listOf(navArgument("url") { type = NavType.StringType })
+            )
+            { backStackEntry ->
+
+                val url = backStackEntry.arguments?.getString("url") ?: ""
+                SecureViewerScreen(navController, url)
             }
+
             composable(Screen.ThreatDetails.route) {
                 ThreatDetailsScreen(navController)
             }

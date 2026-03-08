@@ -75,6 +75,8 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.net.URLEncoder
+
 
 // ── file-private helpers ──────────────────────────────────────────────────────
 
@@ -130,7 +132,7 @@ fun ScanCenterScreen(navController: NavController) {
         item {
             when (selectedTab) {
                 0    -> FileCard()
-                1    -> LinkCard()
+                1    -> LinkCard(navController)
                 else -> ApkCard()
             }
         }
@@ -267,7 +269,7 @@ private fun FileCard() {
 // ── Link card ─────────────────────────────────────────────────────────────────
 
 @Composable
-private fun LinkCard() {
+private fun LinkCard(navController: NavController) {
     var linkInput  by remember { mutableStateOf("") }
     var isScanning by remember { mutableStateOf(false) }
     var scanScore  by remember { mutableStateOf(0) }
@@ -306,6 +308,11 @@ private fun LinkCard() {
                             isScanning = true
                             val score  = LinkScanner.scanUrl(target)
                             scanScore  = score; hasScanned = true; isScanning = false
+                            if (score < 30) {
+                                val encodedUrl = URLEncoder.encode(target, "UTF-8")
+                                navController.navigate("secure_viewer/$encodedUrl")
+                            }
+
                             val fmt = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
                             ScanHistoryStore.history.add(0, ScanResult(
                                 name = target, type = "Link",

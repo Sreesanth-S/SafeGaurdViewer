@@ -5,6 +5,6 @@ sealed class Screen(val route: String) {
     object Scan : Screen("scan")
     object History : Screen("history")
     object Settings : Screen("settings")
-    object SecureViewer : Screen("secure_viewer")
+    object SecureViewer : Screen("secure_viewer/{url}")
     object ThreatDetails : Screen("threat_details")
 }

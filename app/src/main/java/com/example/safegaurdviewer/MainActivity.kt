@@ -68,8 +68,16 @@ fun SafeGuardApp() {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(navController)
             }
-            composable(Screen.Scan.route) {
-                ScanCenterScreen(navController)
+            composable(
+                route = "scan?tab={tab}",
+                arguments = listOf(navArgument("tab") {
+                    type = NavType.StringType
+                    defaultValue = "files"
+                })
+            ) { backStackEntry ->
+
+                val tab = backStackEntry.arguments?.getString("tab") ?: "files"
+                ScanCenterScreen(navController, defaultTab = tab)
             }
             composable(Screen.History.route) {
                 ScanHistoryScreen(navController)
@@ -87,9 +95,19 @@ fun SafeGuardApp() {
                 SecureViewerScreen(navController, url)
             }
 
-            composable(Screen.ThreatDetails.route) {
-                ThreatDetailsScreen(navController)
+            composable(
+                route = Screen.ThreatDetails.route,
+                arguments = listOf(navArgument("reason") {
+                    type = NavType.StringType
+                    defaultValue = "Unknown"
+                })
+            ) { backStackEntry ->
+
+                val reason = backStackEntry.arguments?.getString("reason") ?: "Unknown"
+
+                ThreatDetailsScreen(reason)
             }
+
         }
     }
 }

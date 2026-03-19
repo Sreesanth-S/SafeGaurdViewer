@@ -23,7 +23,7 @@ import com.example.safegaurdviewer.ui.components.RiskScoreMeter
 import com.example.safegaurdviewer.ui.theme.*
 
 @Composable
-fun ThreatDetailsScreen(navController: NavController) {
+fun ThreatDetailsScreen(reason: String) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(CyberBlack),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 100.dp)
@@ -46,7 +46,7 @@ fun ThreatDetailsScreen(navController: NavController) {
                     Text("Detailed scan report", fontSize = 13.sp, color = TextSecondary)
                 }
                 IconButton(
-                    onClick = { navController.popBackStack() },
+                    onClick = {  },
                     modifier = Modifier
                         .size(36.dp)
                         .background(CyberSurface, RoundedCornerShape(10.dp))

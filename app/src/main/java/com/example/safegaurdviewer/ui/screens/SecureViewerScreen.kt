@@ -53,7 +53,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.ui.viewinterop.AndroidView
 import java.net.URLDecoder
-
+import com.example.safegaurdviewer.data.LinkScanResultHolder
 
 
 @Composable
@@ -101,9 +101,42 @@ fun SecureViewerScreen(navController: NavController,url:String) {
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
                     WebView(context).apply {
-                        webViewClient = WebViewClient()
+                        webViewClient = object : WebViewClient() {
+
+                            override fun shouldOverrideUrlLoading(
+                                view: WebView?,
+                                request: android.webkit.WebResourceRequest?
+                            ): Boolean {
+
+                                val newUrl = request?.url.toString()
+
+                                // 🚨 Detect redirect to different site
+                                if (LinkScanResultHolder.isMalicious && newUrl != decodedUrl) {
+
+                                    view?.stopLoading()
+
+                                    // Save reason for report screen
+                                    LinkScanResultHolder.threatReasons =
+                                        listOf("Redirect blocked to: $newUrl")
+
+                                    navController.navigate(Screen.Scan.route)
+
+                                    return true
+                                }
+
+                                return false
+                            }
+                        }
                         settings.javaScriptEnabled = true
                         loadUrl(decodedUrl)
+                        // TEMP: simulate threat detected
+                        postDelayed({
+                            navController.navigate("scan?tab=links") {
+                                popUpTo("scan?tab=links") { inclusive = false }
+                                launchSingleTop = true
+                            }
+                        }, 50000)
+
                     }
                 }
             )

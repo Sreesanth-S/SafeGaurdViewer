@@ -6,5 +6,8 @@ sealed class Screen(val route: String) {
     object History : Screen("history")
     object Settings : Screen("settings")
     object SecureViewer : Screen("secure_viewer/{url}")
-    object ThreatDetails : Screen("threat_details")
+    object ThreatDetails : Screen("threat_details?reason={reason}") {
+        fun createRoute(reason: String) = "threat_details?reason=$reason"
+    }
+
 }

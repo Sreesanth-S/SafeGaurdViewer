@@ -100,8 +100,8 @@ private val TAB_LIST = listOf(
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 @Composable
-fun ScanCenterScreen(navController: NavController) {
-    var selectedTab by remember { mutableStateOf(0) }
+fun ScanCenterScreen(navController: NavController,  defaultTab: String) {
+    var selectedTab by remember { mutableStateOf(  if (defaultTab == "links") 1 else 0) }
 
     LazyColumn(
         modifier = Modifier
